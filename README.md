@@ -11,5 +11,4 @@ graph TD;
     F --> I[__init__.py]
   end
   I -.-> M[main.py]
-  style "lp_module" fill:#f9f,stroke:#333,stroke-width:2px
 ```
