@@ -5,13 +5,18 @@ import numpy as np
 # Problem definition
 a1 = np.array([-1., 1.])
 a2 = np.array([-0.5, -1.])
-b1 = -1.
-b2 = -2.
-cstr1 = Constraint(a1,b1,">=")
-cstr2 = Constraint(a2,b2,">=")
+x_l = np.array([0.0,0.0])
+x_u = np.array([np.inf,np.inf])
+b1_l = -1.
+b1_u = np.inf
+b2_l = -2.
+b2_u = np.inf
+cstr1 = Constraint(a1,">=",b1_l,b1_u)
+cstr2 = Constraint(a2,">=",b2_l,b2_u)
 c = np.array([1., 1.])
 lp = LinearProblem()
 lp.set_objective("Max",c)
+lp.set_variable_bounds(x_l,x_u)
 lp.set_constraints([cstr1,cstr2])
 
 lp.solve()

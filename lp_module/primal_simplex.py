@@ -7,15 +7,17 @@ class SLP_Model:
     Attributes:
         A (np.ndarray): Contraints matrix.
         b (np.ndarray): 2nd member of the constraints.
-        c (np.ndarray): vector of the objective function.
-        n (int): number of variables.
-        m (int): number of constraints.
+        c (np.ndarray): Vector of the objective function.
+        n (int): Number of variables.
+        m (int): Number of constraints.
+        offset (float): objective value offset that araise when converting a general linear problem into a standard (SLP) formulation.
     """
     A: np.ndarray
     b: np.ndarray
     c: np.ndarray
     n: int
     m: int
+    offset: float
 
     def __init__(self):
         """Instanciates an empty SLP model."""
@@ -24,12 +26,13 @@ class SLP_Model:
         self.c = np.array([],dtype='d')
         self.n = -1
         self.m = -1
+        self.offset = 0.
 
     def modelPhaseI(self):
         """Creates a SLP model for the phase I / initialization of the primal simplex from the current (self) SLP model.
         Returns:
-            (SLP_Model): phase I SLP problem for the self SLP model.
-            (SolutionBase): feasible basis for the phase I SLP problem.
+            (SLP_Model): Phase I SLP problem for the self SLP model.
+            (SolutionBase): Feasible basis for the phase I SLP problem.
         """
         n = len(self.c)
         m = len(self.b)
@@ -44,6 +47,7 @@ class SLP_Model:
         slp_I.c = np.concatenate([np.zeros((n),dtype='d'),np.ones((m),dtype='d')])
         slp_I.n = n+m
         slp_I.m = m
+        slp_I.offset = self.offset
 
         # Buid initial feasible basis
         baseI = Basis(n+m,m)
@@ -56,8 +60,11 @@ class SLP_Model:
 
     def primalSimplex(self, base0: Basis, it_max = 1000):
         """Solve the given SLP problem starting from base0 basis.
-        Arguments:
-            base0 (Basis): feasible basis for the first iteration.
+        Args:
+            base0 (Basis): Feasible basis for the first iteration.
+            it_max (int, optional): Maximum number of iterations. Degault: 1000.
+        Returns:
+            (Basis): Optimal basis.
         """
         base = base0 # only a reference
         base.invA_B = np.linalg.inv(self.A[:,base.B])
@@ -108,3 +115,13 @@ class SLP_Model:
 
         print(f"--> [primalSimplex]: non-convegence after {it_max} iterations !")
         return base
+    
+    def __str__(self):
+        slp_str = f"(SLP) formulation ({self.n},{self.m}):\n"
+        slp_str += f" -> c = {self.c}\n"
+        slp_str += f" -> offset = {self.offset}\n"
+        slp_str += f" -> A = {self.A}\n"
+        slp_str += f" -> b = {self.b}\n"
+        return slp_str
+
+
