@@ -2,6 +2,7 @@
 import numpy as np
 from .primal_simplex import SLP_Model
 from .param import *
+from .basis import Basis
 import highspy  # for the MPS reader
 
 
@@ -184,7 +185,6 @@ class LinearProblem:
         constraints_list = []
         for i in range(num_cons):
             row_coeffs = A_dense[i, :]
-            # case parser
             if abs(b_l[i] - b_u[i]) < 1e-10:
                 constraints_list.append(Constraint(row_coeffs, "==", b_l[i], b_u[i]))
             else:
@@ -196,13 +196,12 @@ class LinearProblem:
 
     def to_SLP(self):
         """Converts a general linear programming problem into a standard linear programming (SLP) formulation."""
-        # build matrix of constraints
+        
+        # --- transforms constraints b_l <= Ax <= b_u into A'*x >= b'
         deviation_flag = [] # number of deviation variables to add when switching to the SLP formulation
         nb_deviation = 0
         A = []
         b = []
-
-        # --- transforms constraints b_l <= Ax <= b_u into A'*x >= b'
         for j, cstr in enumerate(self.constraints):
             if cstr.symbol == "==":
                 A.append(cstr.a)
@@ -264,7 +263,6 @@ class LinearProblem:
 
         # Phase I
         slp = self.to_SLP()
-        print(slp)
         slpI, baseI = slp.modelPhaseI()
         baseII_tmp = slpI.primalSimplex(baseI)
 
@@ -278,6 +276,19 @@ class LinearProblem:
         print(f"Basis that gives optimal value z = {slp.offset+z} = {z} + {slp.offset} (offset)")
         print(optiBasis)
         print("----------------------")
+
+    
+    def getResult(self, base: Basis):
+            """Returns the solution and its associated objective value from the given basis.
+            Args:
+                base (Basis): basis of the solution (in the SLP formulation).
+            Returns:
+                (np.ndarray): Optimal solution for the initial problem formulation
+                (float): Associated optimal value (without the offset of the SLP formulation).
+            """
+            x_res = base.x[0:self.n] + self.x_l
+            z_res = np.dot(x_res,self.c)
+            return x_res, z_res
 
 
     def __str__(self):

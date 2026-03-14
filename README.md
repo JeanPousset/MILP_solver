@@ -12,3 +12,6 @@ graph TD;
   end
   I -.-> M[main.py]
 ```
+## References
+
+LP instances were found on [John Burkardt](https://www.researchgate.net/profile/John-Burkardt) educational page via [this link](https://people.sc.fsu.edu/~jburkardt/datasets/mps/).

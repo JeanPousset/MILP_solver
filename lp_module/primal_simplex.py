@@ -122,6 +122,5 @@ class SLP_Model:
         slp_str += f" -> offset = {self.offset}\n"
         slp_str += f" -> A = {self.A}\n"
         slp_str += f" -> b = {self.b}\n"
-        return slp_str
 
 
