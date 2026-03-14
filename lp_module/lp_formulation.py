@@ -127,7 +127,6 @@ class LinearProblem:
         Args:
             constraints (list[Constraints]): List of linear constraints.
         """
-        assert len(constraints) <= self.n, f"[set_constraints]: the number of constraints ({len(constraints)}) can not exceed the number variables ({self.n})"
         self.m = 0
         for cstr in constraints:
             assert len(cstr.a) == self.n, f"[set_constraints]: constraint `a` length ({len(cstr.a)}) does not match number of variables ({self.n})"
@@ -254,12 +253,21 @@ class LinearProblem:
         return slp
 
 
-    def solve(self):
+    def solve(self, verbosity=-1):
+        """Solves the LP problem with the primal simplex method.
+        Args:
+            verbosity (int, optional): whether logs will be printed.
+        Returns:
+            (Basis): optimal basis found.
+        """
 
         # Display
-        print("----------------------")
-        print("Resolution of problem:\n")
-        print(self)
+        if verbosity > 0:
+            print("----------------------")
+        if verbosity >= 0:
+            print(f"Resolution of problem of size (n,m) = ({self.n},{self.m}):\n")
+        if verbosity > 0:
+            print(self)
 
         # Phase I
         slp = self.to_SLP()
@@ -267,15 +275,21 @@ class LinearProblem:
         baseII_tmp = slpI.primalSimplex(baseI)
 
         # Phase II
-        baseII = baseII_tmp.extract_baseII()
+        baseII = baseII_tmp.extract_baseII(slp, slpI.A)
+        print("base II extracted")
+
         optiBasis = slp.primalSimplex(baseII)
 
         # Results
         z_slp = optiBasis.x.dot(slp.c)
         z = -z_slp if self.flag_max else z_slp
-        print(f"Basis that gives optimal value z = {slp.offset+z} = {z} + {slp.offset} (offset)")
-        print(optiBasis)
-        print("----------------------")
+        if verbosity >= 0:
+            print(f"Basis that gives optimal value z = {slp.offset+z} = {z} + {slp.offset} (offset)")
+            print(optiBasis)
+        if verbosity > 0:
+            print("----------------------")
+        
+        return optiBasis
 
     
     def getResult(self, base: Basis):

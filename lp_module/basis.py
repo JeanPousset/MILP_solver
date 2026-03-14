@@ -24,20 +24,48 @@ class Basis:
         self.invA_B = np.zeros((m,m),dtype='d')
         self.x = np.zeros((n),dtype='d')
 
-    def extract_baseII(self):
+    def extract_baseII(self, slp, A_phaseI):
         """Extracts a feasible basis (baseII) from the optimal basis resulting of phase I of the simplex initialization.
+        Args:
+            slp (SLP_Model): Standard formulation of the inital problem.
+            A_phaseI (np.ndarray): Constraint matrix of the phase I SLP formulation.
         Returns:
             (Basis): a feasible basis for the initial SLP.
         """
+
+        n_orig = slp.n
+        m_orig = slp.m
         # Check that initialization variables z are nul
-        if any(abs(self.x[range(self.n-self.m, self.n)]) > DIGITAL_0):
+        if any(abs(self.x[n_orig:]) > DIGITAL_0):
             raise ValueError(f"[solve]: problem is not feasible !")
+        
         # Remove initialization variables z from baseI
-        baseII = Basis(self.n-self.m,self.m)
-        baseII.x = self.x[0:baseII.n]
-        baseII.B = self.B
-        baseII.N = np.setdiff1d(self.N,np.arange(baseII.n,self.n))
-        baseII.invA_B = self.invA_B
+        B_list = list(self.B)
+        N_list = list(self.N)
+        N_real = [j for j in N_list if j < n_orig] # variables in N that belongs to the initial problem
+        for i, var_index in enumerate(B_list):
+            if var_index >= n_orig: # i.e. artificial variable is inside the basis
+                print("Found residual initialization variable in B")
+                found_pivot = False
+                for j_idx, var_N in enumerate(N_real):
+                    # check if pivot is digitaly feasible 
+                    d_col = self.invA_B @ A_phaseI[:, var_N]
+                    if abs(d_col[i]) > DIGITAL_0:
+                        B_list[i] = var_N
+                        N_real.pop(j_idx)
+                        found_pivot = True
+                        self.invA_B = np.linalg.inv(A_phaseI[:, B_list])
+                        break
+                if not found_pivot:
+                    print(f"[extract_baseII]: Warning : pivot not found for switching initial variable that is still in basis.")
+
+        # builds new basis    
+        baseII = Basis(n_orig, m_orig)
+        baseII.B = np.array(B_list, dtype=int)
+        baseII.N = np.setdiff1d(range(n_orig),baseII.B)
+        baseII.invA_B = np.linalg.inv(slp.A[:, baseII.B])
+        baseII.x = np.zeros(n_orig)
+        baseII.x[baseII.B] = baseII.invA_B @ slp.b
         return baseII
 
     def __str__(self):

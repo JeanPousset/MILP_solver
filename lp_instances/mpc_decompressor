@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# check if repository is correctly passed as an argument
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <compressed_repository> $1 <mpc_repository>"
+    exit 1
+fi
+
+repo="$1"
+out_repo="$2"
+
+# check repositories existence
+if [ ! -d "$repo" ]; then
+    echo "Error : compressed repository '$repo' does not exist."
+    exit 1
+fi
+
+if [ ! -d "$out_repo" ]; then
+    echo "Error : mpc repository '$out_repo' does not exist."
+    exit 1
+fi
+
+# loop on all .txt file in the repo a
+find "$repo" -type f -name "*.txt" | while read -r file; do
+    echo "Uncompress file : $file"
+    file_name=$(basename "$file" .txt)
+    mpc_path="$out_repo/$file_name.mps"
+    ./emps "$file" > "$mpc_path"
+done
+
+echo "Traitement terminé."

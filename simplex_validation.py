@@ -27,11 +27,14 @@ def solve_primal_simplex(mps_file: str):
         (float): Optimal value.
     """
     lp = LinearProblem.from_mps(mps_file)
-    optimal_basis = lp.solve()
+    optimal_basis = lp.solve(verbosity=0)
     return lp.getResult(optimal_basis)
 
-mps_file_names = ["adlittle","afiro","empstest","nazareth","testprobs"]
-mps_repo = "lp_instances/"
+mps_file_names = ["adlittle","afiro","empstest","maros","nazareth","testprobs"]
+mps_file_names = ["sc50b"]
+mps_inf_neg_var = ["empstest","nazareth","testprob","adlittle"]
+mps_doable = ["maros","afiro"]
+mps_repo = "lp_instances/Netlib/"
 
 
 def primal_simplex_validation():
@@ -47,3 +50,6 @@ def primal_simplex_validation():
         test_str = f" • {mps} : |err_z| = {err_z},\t ||err_x|| = {err_x} -->"
         test_str += "[passed]" if (err_x <= DIGITAL_0 and err_z <= DIGITAL_0) else "[FAILED !]"
         print(test_str)
+
+
+primal_simplex_validation()

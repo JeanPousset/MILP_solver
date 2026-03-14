@@ -58,7 +58,7 @@ class SLP_Model:
         return slp_I, baseI
 
 
-    def primalSimplex(self, base0: Basis, it_max = 1000):
+    def primalSimplex(self, base0: Basis, it_max = 100000):
         """Solve the given SLP problem starting from base0 basis.
         Args:
             base0 (Basis): Feasible basis for the first iteration.
@@ -76,12 +76,13 @@ class SLP_Model:
             r = self.c[base.N] - (self.A[:,base.N].T @ y)
 
             # Step 2: optimality check
-            if np.all(r >= -DIGITAL_0):
+            candidates = np.where(r < -DIGITAL_0)[0]
+            if len(candidates) == 0:
                 # print(f"--> End of simplex in {it} iterations, z = {base.x.dot(self.c)}, r = {r}")
                 return base
 
             # Step 3: Descent direction (incomming variable j)
-            j = np.min(np.where(r<0)[0])
+            j = np.min(candidates) # Bland rule
             d = -base.invA_B @ self.A[:,base.N[j]]
 
             # Step 4: check if problem is bounded
@@ -100,14 +101,16 @@ class SLP_Model:
             l = argmin_ratios[np.argmin(argmin_var_indices)] # Bland rule (minimum variable index)
 
             # Step 7: update new basis
-            base.x[base.B] += α*d
-            base.x[base.N[j]] += α
-            base.x[base.B[l]] = 0. # hard reset to avoid null imprecisions
             incomming_var = base.N[j]
             outcommig_var = base.B[l]
             base.B[l] = incomming_var
             base.N[j] = outcommig_var
+            if np.linalg.cond(self.A[:,base.B]) > 1e9:
+                print(f"[primalSimplex]: A_B bad conditionned ({np.linalg.cond(self.A[:,base.B])})!")
             base.invA_B = np.linalg.inv(self.A[:,base.B])
+            base.x = np.zeros(self.n) 
+            base.x[base.B] = base.invA_B @ self.b
+            base.x[base.x < DIGITAL_0] = 0.0 # corrections
 
             # Logs
             it += 1

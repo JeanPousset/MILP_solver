@@ -1,2 +1,2 @@
 # Approximation of the null digital value
-DIGITAL_0 = 1e-15
+DIGITAL_0 = 1e-9
