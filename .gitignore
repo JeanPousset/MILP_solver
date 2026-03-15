@@ -10,3 +10,6 @@
 unit_tests/lp_instances/Netlib/*
 !unit_tests/lp_instances/Netlib/maros.mps
 unit_tests/lp_instances/Netlib_compressed/
+unit_tests/lp_instances/mpc_decompressor
+unit_tests/lp_instances/emps.c
+unit_tests/lp_instances/emps

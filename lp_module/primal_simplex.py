@@ -161,7 +161,8 @@ class SLP_Model:
 
             # Logs
             it += 1
-            # print(f"\t - it[{it}]: z = {base.x.dot(self.c)}")
+            if verbosity >= 0:
+                print(f"\r primalSimex ({self.m},{self.n}) - it[{it}]: z = {base.x.dot(self.c)}")
 
         print(f"--> [primalSimplex]: non-convegence after {it_max} iterations !")
         return base

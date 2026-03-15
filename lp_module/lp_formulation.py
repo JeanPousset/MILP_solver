@@ -276,11 +276,11 @@ class LinearProblem:
         # Phase I
         slp = self.to_SLP()
         slpI, baseI = slp.modelPhaseI()
-        baseII_tmp = slpI.primalSimplex(baseI, verbosity=verbosity)
+        baseII_tmp = slpI.primalSimplex(baseI, verbosity=0)
 
         # Phase II
         baseII = baseII_tmp.extract_baseII(slp, slpI.A)
-        optiBasis = slp.primalSimplex(baseII, verbosity=verbosity)
+        optiBasis = slp.primalSimplex(baseII, verbosity=0)
 
         # Results
         z_slp = optiBasis.x.dot(slp.c)

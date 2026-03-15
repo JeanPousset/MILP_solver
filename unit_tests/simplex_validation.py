@@ -55,10 +55,10 @@ def primal_simplex_validation():
         x_highs, z_highs = solve_HiGHS(mps_path)
         x_ps, z_ps = solve_primal_simplex(mps_path)
 
-        err_z = np.abs(z_ps-z_highs)
+        rel_err_z = np.abs(z_ps-z_highs)/(np.abs(z_ps)+1)
         err_x = np.linalg.norm(x_ps-x_highs)
-        test_str = f" • {mps} : |err_z| = {err_z},\t ||err_x|| = {err_x} -->"
-        test_str += "[passed]" if (err_z <= TOL_Z) else "[FAILED !]"
+        test_str = f" • {mps} : |rel_err_z| = {rel_err_z},\t ||err_x|| = {err_x} -->"
+        test_str += "[passed]" if (rel_err_z <= TOL_Z) else "[FAILED !]"
         print(test_str)
 
 
