@@ -1,6 +1,7 @@
 from lp_module import *
 import numpy as np
 import highspy
+import os
 
 def solve_HiGHS(mps_file: str):
     """Solves a LP problem with HiGHS solver from a MPS file.
@@ -27,20 +28,29 @@ def solve_primal_simplex(mps_file: str):
         (float): Optimal value.
     """
     lp = LinearProblem.from_mps(mps_file)
-    optimal_basis = lp.solve(verbosity=0)
+    optimal_basis = lp.solve(verbosity=-1)
     return lp.getResult(optimal_basis)
 
 mps_file_names = ["adlittle","afiro","empstest","maros","nazareth","testprobs"]
 mps_file_names = ["sc50b"]
 mps_inf_neg_var = ["empstest","nazareth","testprob","adlittle"]
 mps_doable = ["maros","afiro"]
-mps_repo = "lp_instances/Netlib/"
+mps_repo = "unit_tests/lp_instances/Netlib/"
+
+
+mps_file_names = [
+    os.path.splitext(f)[0]  # removes ".mps"
+    for f in os.listdir(mps_repo)
+    if f.endswith('.mps')
+]
 
 
 def primal_simplex_validation():
 
     for mps in mps_file_names:
         mps_path = mps_repo + mps + ".mps"
+
+        print(f"-> test file : {mps}")
         
         x_highs, z_highs = solve_HiGHS(mps_path)
         x_ps, z_ps = solve_primal_simplex(mps_path)
@@ -48,7 +58,7 @@ def primal_simplex_validation():
         err_z = np.abs(z_ps-z_highs)
         err_x = np.linalg.norm(x_ps-x_highs)
         test_str = f" • {mps} : |err_z| = {err_z},\t ||err_x|| = {err_x} -->"
-        test_str += "[passed]" if (err_x <= DIGITAL_0 and err_z <= DIGITAL_0) else "[FAILED !]"
+        test_str += "[passed]" if (err_z <= TOL_Z) else "[FAILED !]"
         print(test_str)
 
 

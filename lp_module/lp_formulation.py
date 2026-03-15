@@ -3,6 +3,7 @@ import numpy as np
 from .primal_simplex import SLP_Model
 from .param import *
 from .basis import Basis
+from scipy import sparse
 import highspy  # for the MPS reader
 
 
@@ -144,7 +145,7 @@ class LinearProblem:
         """
 
         # --- loads mps file
-        h = highspy.Highs()
+        h = highspy.Highs();
         status = h.readModel(mps_file)
         if status != highspy.HighsStatus.kOk:
             raise ImportError(f"[from_mps]: Can't read MPS file : {mps_file}")
@@ -235,15 +236,18 @@ class LinearProblem:
         nb_constraints = len(deviation_flag)
         deviation_flag = np.array(deviation_flag, dtype=bool)
         nb_deviation = np.sum(deviation_flag)
-        dev_matrix = np.zeros((nb_constraints,nb_deviation), dtype='d') # constraint matrix for deviation coefficients s
-        dev_matrix[deviation_flag, range(nb_deviation)] = -1.
+        row_indices = np.where(deviation_flag)[0]
+        col_indices = np.arange(nb_deviation)
+        data = np.full(nb_deviation, -1.0)
+        dev_matrix_sparse = sparse.csc_matrix((data, (row_indices, col_indices)), shape=(nb_constraints, nb_deviation))
         slp = SLP_Model()
-        slp.A = np.hstack((np.array(A),dev_matrix))
+        slp.A = sparse.hstack([sparse.csc_matrix(A),dev_matrix_sparse], format='csc')
 
         # --- dimensions & 2nd members
         slp.n = self.n + nb_deviation
         slp.m = nb_constraints
         slp.b = np.array(b)
+        slp.scale_model()
 
         # --- objective function
         new_c = -self.c if self.flag_max else self.c
@@ -272,13 +276,11 @@ class LinearProblem:
         # Phase I
         slp = self.to_SLP()
         slpI, baseI = slp.modelPhaseI()
-        baseII_tmp = slpI.primalSimplex(baseI)
+        baseII_tmp = slpI.primalSimplex(baseI, verbosity=verbosity)
 
         # Phase II
         baseII = baseII_tmp.extract_baseII(slp, slpI.A)
-        print("base II extracted")
-
-        optiBasis = slp.primalSimplex(baseII)
+        optiBasis = slp.primalSimplex(baseII, verbosity=verbosity)
 
         # Results
         z_slp = optiBasis.x.dot(slp.c)

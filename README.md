@@ -14,4 +14,4 @@ graph TD;
 ```
 ## References
 
-LP instances were found on [John Burkardt](https://www.researchgate.net/profile/John-Burkardt) educational page via [this link](https://people.sc.fsu.edu/~jburkardt/datasets/mps/).
+LP instances were found in the [Netlib dataset](https://www.netlib.org/lp/data/). The files were decompressed thanks to the `emps.c` tool, also found on this page.
