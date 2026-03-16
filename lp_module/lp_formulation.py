@@ -157,22 +157,22 @@ class LinearProblem:
         lp.set_objective("Min", c)
 
         # --- variables bounds (extremum values are replaced by +/- np.inf)
-        x_l = np.array(highs_model.col_lower_)
-        x_u = np.array(highs_model.col_upper_)
+        x_l = np.array(highs_model.col_lower_, dtype='d')
+        x_u = np.array(highs_model.col_upper_, dtype='d')
         x_l = np.where(x_l < -1e20, -np.inf, x_l)   # in this case, an error will araise when calling `lp.set_variables_bound``
         x_u = np.where(x_u > 1e20, np.inf, x_u)
         lp.set_variable_bounds(x_l,x_u)
 
         # --- constraints bounds  (extremum values are replaced by +/- np.inf)
-        b_l = np.array(highs_model.row_lower_)
-        b_u = np.array(highs_model.row_upper_)
+        b_l = np.array(highs_model.row_lower_, dtype='d')
+        b_u = np.array(highs_model.row_upper_, dtype='d')
         b_l = np.where(b_l < -1e20, -np.inf, b_l)
         b_u = np.where(b_u > 1e20, np.inf, b_u)
 
         # --- reads constraints matrix from CSS (Compressed Column Storage) format
         num_vars = len(highs_model.col_cost_)
         num_cons = len(highs_model.row_lower_)
-        A_dense = np.zeros((num_cons, num_vars))
+        A_dense = np.zeros((num_cons, num_vars), dtype='d')
         for i_col in range(num_vars):
             start = highs_model.a_matrix_.start_[i_col]
             end = highs_model.a_matrix_.start_[i_col + 1]
@@ -218,7 +218,7 @@ class LinearProblem:
                     deviation_flag.append(True)
 
         # --- shift constraints bounds to cancel variables lower bounds
-        A_tmp = np.array(A)
+        A_tmp = np.array(A, dtype='d')
         shift_b = A_tmp @ self.x_l
         for j in range(len(b)):
             b[j] -= shift_b[j]
@@ -238,21 +238,21 @@ class LinearProblem:
         nb_deviation = np.sum(deviation_flag)
         row_indices = np.where(deviation_flag)[0]
         col_indices = np.arange(nb_deviation)
-        data = np.full(nb_deviation, -1.0)
-        dev_matrix_sparse = sparse.csc_matrix((data, (row_indices, col_indices)), shape=(nb_constraints, nb_deviation))
+        data = np.full(nb_deviation, -1.0, dtype='d')
+        dev_matrix_sparse = sparse.csc_matrix((data, (row_indices, col_indices)), shape=(nb_constraints, nb_deviation), dtype='d')
         slp = SLP_Model()
-        slp.A = sparse.hstack([sparse.csc_matrix(A),dev_matrix_sparse], format='csc')
+        slp.A = sparse.hstack([sparse.csc_matrix(A),dev_matrix_sparse], format='csc', dtype='d')
 
         # --- dimensions & 2nd members
         slp.n = self.n + nb_deviation
         slp.m = nb_constraints
-        slp.b = np.array(b)
-        slp.scale_model()
+        slp.b = np.array(b, dtype='d')
 
         # --- objective function
         new_c = -self.c if self.flag_max else self.c
         slp.c = np.concatenate([new_c,np.zeros((nb_deviation),dtype='d')])
         slp.offset = np.dot(self.c, self.x_l)
+        slp.scale_model()
 
         return slp
 
@@ -263,6 +263,7 @@ class LinearProblem:
             verbosity (int, optional): whether logs will be printed.
         Returns:
             (Basis): optimal basis found.
+            (SLP): Standard formulation of the LP problem.
         """
 
         # Display
@@ -283,7 +284,8 @@ class LinearProblem:
         optiBasis = slp.primalSimplex(baseII, verbosity=0)
 
         # Results
-        z_slp = optiBasis.x.dot(slp.c)
+        x_unscalled = optiBasis.x / slp.col_scales
+        z_slp = np.dot(x_unscalled,slp.c)
         z = -z_slp if self.flag_max else z_slp
         if verbosity >= 0:
             print(f"Basis that gives optimal value z = {slp.offset+z} = {z} + {slp.offset} (offset)")
@@ -291,10 +293,10 @@ class LinearProblem:
         if verbosity > 0:
             print("----------------------")
         
-        return optiBasis
+        return optiBasis, slp
 
     
-    def getResult(self, base: Basis):
+    def getResult(self, base: Basis, col_scales: np.ndarray):
             """Returns the solution and its associated objective value from the given basis.
             Args:
                 base (Basis): basis of the solution (in the SLP formulation).
@@ -302,7 +304,7 @@ class LinearProblem:
                 (np.ndarray): Optimal solution for the initial problem formulation
                 (float): Associated optimal value (without the offset of the SLP formulation).
             """
-            x_res = base.x[0:self.n] + self.x_l
+            x_res = base.x[0:self.n] / col_scales[0:self.n] + self.x_l
             z_res = np.dot(x_res,self.c)
             return x_res, z_res
 

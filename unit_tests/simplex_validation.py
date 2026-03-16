@@ -28,8 +28,8 @@ def solve_primal_simplex(mps_file: str):
         (float): Optimal value.
     """
     lp = LinearProblem.from_mps(mps_file)
-    optimal_basis = lp.solve(verbosity=-1)
-    return lp.getResult(optimal_basis)
+    optimal_basis, slp = lp.solve(verbosity=-1)
+    return lp.getResult(optimal_basis, slp.col_scales)
 
 mps_file_names = ["adlittle","afiro","empstest","maros","nazareth","testprobs"]
 mps_file_names = ["sc50b"]
@@ -62,4 +62,38 @@ def primal_simplex_validation():
         print(test_str)
 
 
-primal_simplex_validation()
+def primal_simplex_unique_validation(mps_name):
+
+    mps_path = mps_repo + mps_name + ".mps"
+
+    print(f"-> test file : {mps_name}")
+    
+    x_highs, z_highs = solve_HiGHS(mps_path)
+    x_ps, z_ps = solve_primal_simplex(mps_path)
+
+    rel_err_z = np.abs(z_ps-z_highs)/(np.abs(z_ps)+1)
+    err_x = np.linalg.norm(x_ps-x_highs)
+    test_str = f" • {mps_name} : |rel_err_z| = {rel_err_z},\t ||err_x|| = {err_x} -->"
+    test_str += "[passed]" if (rel_err_z <= TOL_Z) else "[FAILED !]"
+    print(test_str)
+
+
+# primal_simplex_validation()
+
+def primal_simplex_unique_validation(mps_name):
+
+    mps_path = mps_repo + "Passed/" + mps_name + ".mps"
+
+    print(f"-> test file : {mps_name}")
+    
+    x_highs, z_highs = solve_HiGHS(mps_path)
+    x_ps, z_ps = solve_primal_simplex(mps_path)
+
+    rel_err_z = np.abs(z_ps-z_highs)/(np.abs(z_ps)+1)
+    err_x = np.linalg.norm(x_ps-x_highs)
+    test_str = f" • {mps_name} : |rel_err_z| = {rel_err_z},\t ||err_x|| = {err_x} -->"
+    test_str += "[passed]" if (rel_err_z <= TOL_Z) else "[FAILED !]"
+    print(test_str)
+
+
+primal_simplex_unique_validation("ship12l")

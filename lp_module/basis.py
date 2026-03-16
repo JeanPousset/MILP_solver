@@ -24,6 +24,7 @@ class Basis:
         self.B = np.arange(m, dtype=int)
         self.N = np.arange(m, n, dtype=int)
         self.x = np.zeros((n),dtype='d')
+        self.y = np.zeros((m),dtype='d')
         self.lu_solver = None
 
     def update_lu(self, A_matrix):
@@ -47,34 +48,52 @@ class Basis:
         # Check that initialization variables z are nul
         if any(abs(self.x[n_orig:]) > TOL_FEAS):
             raise ValueError(f"[solve]: problem is not feasible !")
-        
         # Remove initialization variables z from baseI
-        B_list = list(self.B)
-        N_list = list(self.N)
-        N_real = [j for j in N_list if j < n_orig] # variables in N that belongs to the initial problem
-        for i, var_index in enumerate(B_list):
-            if var_index >= n_orig: # i.e. artificial variable is inside the basis
-                found_pivot = False
-                for j_idx, var_N in enumerate(N_real):
-                    # check if pivot is digitaly feasible 
-                    d_col = self.lu_solver.solve(A_phaseI[:, var_N].toarray())
-                    if abs(d_col[i]) > TOL_PIVOT:
-                        B_list[i] = var_N
-                        N_real.pop(j_idx)
+        current_B = list(self.B)
+        N_real_candidates = [j for j in range(n_orig) if j not in current_B]
+        rows_with_art = [i for i, var_idx in enumerate(current_B) if var_idx >= n_orig]
+        rows_to_remove = []
+
+        for i in rows_with_art:
+            found_pivot = False
+            for j_cand in N_real_candidates:
+                try:
+                    column_j = A_phaseI[:, j_cand].toarray().ravel()
+                    d_col = self.lu_solver.solve(column_j)
+                    # Test whether the new base is OK
+                    if abs(d_col[i]) > TOL_PIVOT_II:
+                        current_B[i] = j_cand
+                        N_real_candidates.remove(j_cand)
                         found_pivot = True
+                        self.B = np.array(current_B)
                         self.update_lu(A_phaseI)
                         break
-                if not found_pivot:
-                    print(f"[extract_baseII]: Warning : pivot not found for switching initial variable that is still in basis.")
+                except:
+                    continue
+            if not found_pivot:
+                # it means that row i is redundant.
+                print(f"Redundancy detected at row {i}")
+                rows_to_remove.append(i)
 
-        # builds new basis    
-        baseII = Basis(n_orig, m_orig)
-        baseII.B = np.array(B_list, dtype=int)
-        baseII.N = np.setdiff1d(range(n_orig),baseII.B)
+        # builds smaller SLP model in case of redundancies
+        if rows_to_remove:
+            valid_rows = [r for r in range(len(current_B)) if r not in rows_to_remove]
+            slp.A = slp.A[valid_rows, :]
+            slp.b = slp.b[valid_rows]
+            slp.m = len(valid_rows)
+            current_B = [current_B[r] for r in valid_rows]
+        
+        # final baseII build
+        baseII = Basis(slp.n, slp.m)
+        baseII.B = np.array(current_B, dtype=int)
+        baseII.N = np.array([j for j in range(slp.n) if j not in baseII.B], dtype=int)
+
         baseII.update_lu(slp.A)
-        baseII.x = np.zeros(n_orig)
+        baseII.x = np.zeros(slp.n)
         baseII.x[baseII.B] = baseII.lu_solver.solve(slp.b)
+       
         return baseII
+
 
     def __str__(self):
         """Gives strings to display when calling `print(:Basis)`."""
