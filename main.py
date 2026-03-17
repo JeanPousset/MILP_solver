@@ -19,7 +19,17 @@ lp.set_objective("Max",c)
 lp.set_variable_bounds(x_l,x_u)
 lp.set_constraints([cstr1,cstr2])
 
-lp.solve()
+optiBasis, slp = lp.solve()
+
+
+# add constraint
+a3 = np.array([-2., -1., 0., 0.])
+b3 = -4
+
+dual_base, slp_r = slp.restraint(optiBasis, a3, b3)
+opti_base = slp_r.dual_simplex(dual_base, verbosity=1)
+print(opti_base)
+
 
 # %%
 

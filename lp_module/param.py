@@ -1,7 +1,8 @@
 # Approximation of the null digital value
 TOL_PIVOT = 1e-8
-TOL_REL_COST = 1e-8
+TOL_RED_COST = 1e-8
 TOL_FEAS = 1e-8 # realasibility threshold
 TOL_Z = 1e-9
-TOL_RATIO = 1e-9
+TOL_RATIO_PRIMAL = 1e-9
+TOL_RATIO_DUAL = TOL_RATIO_PRIMAL
 TOL_PIVOT_II = 1e-8

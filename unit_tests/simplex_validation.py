@@ -31,10 +31,7 @@ def solve_primal_simplex(mps_file: str):
     optimal_basis, slp = lp.solve(verbosity=-1)
     return lp.getResult(optimal_basis, slp.col_scales)
 
-mps_file_names = ["adlittle","afiro","empstest","maros","nazareth","testprobs"]
-mps_file_names = ["sc50b"]
-mps_inf_neg_var = ["empstest","nazareth","testprob","adlittle"]
-mps_doable = ["maros","afiro"]
+
 mps_repo = "unit_tests/lp_instances/Netlib/"
 
 
@@ -96,4 +93,4 @@ def primal_simplex_unique_validation(mps_name):
     print(test_str)
 
 
-primal_simplex_unique_validation("ship12l")
+primal_simplex_unique_validation("maros")

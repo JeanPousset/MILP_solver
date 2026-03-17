@@ -4,12 +4,22 @@ from scipy.sparse.linalg import splu
 import scipy.sparse.linalg as spla
 
 class Basis:
-    """Stores data of a simplex basis."""
+    """Stores data of a simplex basis.
+    Attributs:
+        n (int): Number of variables.
+        m (int): Number of constraints.
+        B (np.ndarray): Vector of variables indices (in [1:m]) of the basis.
+        N (np.ndarray): Vector of variables indices (in [1:m]) that are outside the basis.
+        x (np.ndarray): Solution associated to the basis (length n).
+        y (np.ndarray): Dual vector (length m).
+        lu_solver (spla.SuperLU): solver function that solves problem A_B x = b, where b is an argument, and A_B is the basis that was LU pre-factorized.
+    """
     n:     int
     m:     int
     B:     np.ndarray
     N:     np.ndarray
     x:     np.ndarray
+    y:     np.ndarray
     lu_solver: spla.SuperLU
 
     def __init__(self, n: int, m: int):
@@ -91,8 +101,10 @@ class Basis:
         baseII.update_lu(slp.A)
         baseII.x = np.zeros(slp.n)
         baseII.x[baseII.B] = baseII.lu_solver.solve(slp.b)
+        baseII.y = baseII.lu_solver.solve(slp.c[baseII.B], trans='T')
        
         return baseII
+
 
 
     def __str__(self):

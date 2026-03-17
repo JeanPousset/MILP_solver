@@ -6,12 +6,20 @@
 graph TD; 
   subgraph "lp_module"
     P[param.py] --> B[basis.py]
-    B --> S[primal_simplex.py]
+    B --> PS[_primal_simplex.py]
+    B --> DS[_dual_simplex.py]
+    PS --> S[slp.py]
+    DS --> S
     S --> F[lp_formulation.py]
     F --> I[__init__.py]
   end
   I -.-> M[main.py]
+  subgraph "unit_tests"
+    V[simplex_validation.py]
+  end
+  I -.-> V
 ```
-## References
+
+## References
 
 LP instances were found in the [Netlib dataset](https://www.netlib.org/lp/data/). The files were decompressed thanks to the `emps.c` tool, also found on this page.

@@ -1,6 +1,6 @@
 # %% Classes
 import numpy as np
-from .primal_simplex import SLP_Model
+from .slp import SLP_Model
 from .param import *
 from .basis import Basis
 from scipy import sparse
@@ -277,11 +277,11 @@ class LinearProblem:
         # Phase I
         slp = self.to_SLP()
         slpI, baseI = slp.modelPhaseI()
-        baseII_tmp = slpI.primalSimplex(baseI, verbosity=0)
+        baseII_tmp = slpI.primal_simplex(baseI, verbosity=0)
 
         # Phase II
         baseII = baseII_tmp.extract_baseII(slp, slpI.A)
-        optiBasis = slp.primalSimplex(baseII, verbosity=0)
+        optiBasis = slp.primal_simplex(baseII, verbosity=0)
 
         # Results
         x_unscalled = optiBasis.x / slp.col_scales
