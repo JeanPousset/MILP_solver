@@ -12,7 +12,7 @@ graph TD;
     PS -.- S
     DS -.- S
     S --> F[lp.py]
-    F -> MILP[milp.py]
+    F --> MILP[milp.py]
     BB[_branch_and_bound.py] -.- MILP
     MILP --> I[[__init__.py]]
     
