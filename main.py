@@ -1,6 +1,7 @@
 # %% Basic 2D test
 from lp_module import *
 import numpy as np
+from scipy import sparse
 
 # Problem definition
 a1 = np.array([-1., 1.])
@@ -23,7 +24,7 @@ optiBasis, slp = lp.solve()
 
 
 # add constraint
-a3 = np.array([-2., -1., 0., 0.])
+a3 = sparse.csc_matrix([-2., -1., 0., 0.])
 b3 = -4
 
 dual_base, slp_r = slp.restraint(optiBasis, a3, b3)

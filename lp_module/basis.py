@@ -51,6 +51,7 @@ class Basis:
             A_phaseI (np.ndarray): Constraint matrix of the phase I SLP formulation.
         Returns:
             (Basis): a feasible basis for the initial SLP.
+            (list[int]): list of removed row due to redundancies.
         """
 
         n_orig = slp.n
@@ -103,7 +104,7 @@ class Basis:
         baseII.x[baseII.B] = baseII.lu_solver.solve(slp.b)
         baseII.y = baseII.lu_solver.solve(slp.c[baseII.B], trans='T')
        
-        return baseII
+        return baseII, rows_to_remove
 
 
 

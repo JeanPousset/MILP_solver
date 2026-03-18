@@ -72,7 +72,7 @@ class LinearProblem:
         m (int): Number of constraints.
         constraints (List[Constraints]): List of linear constraints.
         x_l (np.ndarray): Variable lower bounds.
-        x_l (np.ndarray): Variable upper bounds.
+        x_u (np.ndarray): Variable upper bounds.
         c (np.ndarray): Vector of the objective function.
         flag_max (bool): Boolean value that is true if the given objective is a 'Max' instead of a 'Min'.
     """
@@ -280,7 +280,7 @@ class LinearProblem:
         baseII_tmp = slpI.primal_simplex(baseI, verbosity=0)
 
         # Phase II
-        baseII = baseII_tmp.extract_baseII(slp, slpI.A)
+        baseII, removed_rows = baseII_tmp.extract_baseII(slp, slpI.A)
         optiBasis = slp.primal_simplex(baseII, verbosity=0)
 
         # Results

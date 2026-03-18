@@ -6,12 +6,13 @@
 graph TD; 
   subgraph "lp_module"
     P[param.py] --> B[basis.py]
-    B --> PS[_primal_simplex.py]
-    B --> DS[_dual_simplex.py]
-    PS --> S[slp.py]
-    DS --> S
-    S --> F[lp_formulation.py]
-    F --> I[__init__.py]
+    PS([_primal_simplex.py])
+    DS([_dual_simplex.py])
+    B --> S[slp.py]
+    PS -.- S
+    DS -.- S
+    S --> F[lp.py]
+    F --> I[[__init__.py]]
   end
   I -.-> M[main.py]
   subgraph "unit_tests"

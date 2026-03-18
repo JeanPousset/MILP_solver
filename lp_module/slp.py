@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 from .basis import Basis
 from scipy import sparse
@@ -86,15 +87,15 @@ class SLP_Model:
         return slp_I, baseI
     
 
-    def restraint(self, base: Basis, a: np.ndarray, b: float):
+    def restraint(self, base: Basis, a: sparse.csc_matrix, b: float) -> tuple[Basis, SLP_Model]:
         """Restraints the problem with the given constraint a*x >= b.
         Args:
-            base (Basis): the optimal basis assiociated to the initial (self) SLP problem.
-            a (np.ndarray): Constraint coefficients.
+            base (Basis): The optimal basis assiociated to the initial (self) SLP problem.
+            a (sparse.csc_matrix): Constraint coefficients that are stored in a flat horizontal CSC matrix (row vector).
             b (float): Constraint lower bound.
         return:
-            (SLP_Model): restrained SLP problem.
             (Basis): dual basis for the restrained SLP problem.
+            (SLP_Model): restrained SLP problem.
         """
         # SLP restriction
         slp_r = SLP_Model()
@@ -105,7 +106,7 @@ class SLP_Model:
         slp_r.col_scales = np.append(self.col_scales,1.0) # we don't update column scalling yet
         
         # scale constraints
-        new_a = sparse.hstack([a.T,np.array([-1.0])], format='csc', dtype='d')
+        new_a = sparse.hstack([a,sparse.csc_matrix([-1.0])], format='csc', dtype='d')
         scale = np.abs(new_a).max()
         A_col = sparse.hstack([self.A,np.zeros((self.m,1), dtype='d')], format='csc', dtype='d')
         slp_r.A = sparse.vstack([A_col,new_a/scale], format='csc', dtype='d')

@@ -2,7 +2,7 @@ import numpy as np
 from .basis import Basis
 from .param import TOL_FEAS, TOL_RATIO_DUAL
 
-def dual_simplex(self, base0: Basis, it_max=10000, verbosity=-1):
+def dual_simplex(self, base0: Basis, it_max=10000, verbosity=-1) -> Basis:
         """Solve the given SLP problem with the simplex method starting from base0 dual basis.
         Args:
             base0 (Basis): A dual basis of SLP for initialization.
@@ -23,24 +23,26 @@ def dual_simplex(self, base0: Basis, it_max=10000, verbosity=-1):
             
             # --- 2: Pivot choice (with Bland rule)
             x_min = np.min(base.x[base.B])
-            candidates_in_B = np.where(abs(base.x[base.B]-x_min) < TOL_FEAS)
+            candidates_in_B = np.where(abs(base.x[base.B]-x_min) < TOL_FEAS)[0]
             p = candidates_in_B[np.argmin(base.B[candidates_in_B])]
 
             # --- 3: Descent step α
             e_p = np.zeros((self.m), dtype='d')
             e_p[p] = 1.0
-            y = base.lu_solver.solve(e_p, trans='T')
-            α = self.A[:, base.N].T @ y
+            y_p = base.lu_solver.solve(e_p, trans='T')
+            α = y_p @ self.A[:, base.N] 
 
             # --- 4: Entry variable (with Bland rule)
-            J = np.where(α <= TOL_FEAS)[0]
+            J = np.where(α <= -TOL_FEAS)[0]
             if len(J) == 0:
-                raise RuntimeError("[dual_simplex]: problem is not bounded")
-            Θ = np.max(r/α)
+                raise RuntimeError("[dual_simplex]: problem is not feasible")
+            
             ratio = np.full((self.n-self.m),-np.inf, dtype='d')
             ratio[J] = r[J]/α[J]
+            Θ = np.max(ratio)
             candidates_in_N = np.where(np.abs(ratio-Θ) < TOL_RATIO_DUAL)[0]
             q = candidates_in_N[np.argmin(base.N[candidates_in_N])]
+
 
             # --- 5: Base update
             incomming_var = base.N[q]
