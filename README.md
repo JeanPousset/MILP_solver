@@ -32,7 +32,7 @@ graph TD;
 ## Usage : example of a knapsack problem
 
 We show here how to solve a basic MILP problem with our module. The following knaspack example will be taken as example. 
- ![equation](https://latex.codecogs.com/svg.image?%5Cbg%7Bwhite%7D%5Cbegin%7Balign%7D%5Cmax%5Chspace%7B0.5cm%7D&8x_1&plus;11x_2&plus;6x_3&plus;4x_4%5C%5C%5Ctext%7Bs.t.%7D%5Chspace%7B0.5cm%7D&5x_1&plus;7x_2&plus;4x_3&plus;3x_4%5Cleq%2014%5C%5C&x_1,x_2,x_3,x_4%5Cin%5C%7B0,1%5C%7D%5Cend%7Balign%7D)
+ ![equation](https://latex.codecogs.com/svg.image?%5Cbegin%7Balign%7D%5Cmax%5Chspace%7B0.5cm%7D&8x_1&plus;11x_2&plus;6x_3&plus;4x_4%5C%5C%5Ctext%7Bs.t.%7D%5Chspace%7B0.5cm%7D&5x_1&plus;7x_2&plus;4x_3&plus;3x_4%5Cleq%2014%5C%5C&x_1,x_2,x_3,x_4%5Cin%5C%7B0,1%5C%7D%5Cend%7Balign%7D)
 
 
 ### Problem definition
