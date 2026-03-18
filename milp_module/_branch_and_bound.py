@@ -37,9 +37,11 @@ def branch(self, base: Basis, slp: SLP_Model) -> list[tuple[Basis,SLP_Model]]:
 def b_and_d(self, max_nb_nodes=100, verbosity=-1) -> Basis:
     """Branch & Bound algorithm to solve MILP problems.
     Args:
-        max_nb_nodes (int, optional): Maximum number of Linear Problem to solve for safety. Default: 1000.
+        max_nb_nodes (int, optional): Maximum number of Linear Problem to solve for safety. Default: 100.
+        verbosity (int, optional): Verbosity level for logs. Default: -1.
     Returns:
-        (Basis): The basis of the sub problem that found the integer-feasible optimal solution.
+        (np.ndarray): Optimal integer-feasible solution.
+        (float): Optimal objective value. 
     """
 
     # --- Initialisation ---
@@ -65,6 +67,9 @@ def b_and_d(self, max_nb_nodes=100, verbosity=-1) -> Basis:
     while len(Q)>0 and nb_nodes < max_nb_nodes:
 
         # logs
+        if verbosity < 1:
+            delete_last_lines(nb_prompt)
+            nb_prompt = 0
         if verbosity >= 0:
             print(f"[B&B]: node {nb_nodes}, z_+ = {z_up}, |Q| = {len(Q)}")
             nb_prompt += 1
@@ -82,7 +87,6 @@ def b_and_d(self, max_nb_nodes=100, verbosity=-1) -> Basis:
         xk, zk = self.getResult(base_k, slp_k.col_scales)
         sign_zk = sign * zk
 
-        print(f"\t xk = {xk}")
 
         # --- Checks if current node can lead to a better integer-feasible solution
         if sign_zk >= z_up:
@@ -94,9 +98,6 @@ def b_and_d(self, max_nb_nodes=100, verbosity=-1) -> Basis:
 
         # --- Checks if relaxed solution satisfies integrity constraints
         if self.check_integrity(xk, slp_k):
-            if verbosity > 0:
-                print(f"\t integer-feasible solution found = {xk}")
-                nb_prompt += 1
             if sign_zk < z_up: 
                 # better integer solution found
                 z_up = sign_zk
@@ -111,9 +112,10 @@ def b_and_d(self, max_nb_nodes=100, verbosity=-1) -> Basis:
         Q.append(node_sup)
         Q.append(node_inf)
 
-        if verbosity < 1:
+    # clean last logs
+    if verbosity < 1:
             delete_last_lines(nb_prompt)
-        nb_prompt = 0
+            nb_prompt = 0
 
     if nb_nodes == max_nb_nodes:
         raise Warning("[B&B]: maximum number of nodes reached, solution is not optimal !")

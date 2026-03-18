@@ -1,4 +1,4 @@
-from lp_module import *
+from milp_module import *
 import numpy as np
 import highspy
 import os

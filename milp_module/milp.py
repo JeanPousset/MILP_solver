@@ -42,5 +42,20 @@ class MILP_Problem(LinearProblem):
     def solve_relaxation(self) -> tuple[Basis, SLP_Model]:
         opti_base, slp = super().solve()
         return opti_base, slp
+    
+    def solve(self, max_nb_nodes=100, verbosity=1):
+        """Solve the MILP problem with the B&B algorithm.
+        Args:
+            max_nb_nodes (int, optional): Maximum number of Linear Problem to solve for safety. Default: 100.
+            verbosity (int, optional): Verbosity level for logs. Default: -1.
+        Returns:
+            (np.ndarray): Optimal integer-feasible solution.
+            (float): Optimal objective value. 
+        """
+        if verbosity >= 1:
+            print(self)
+        x_opti, z_opti = self.branch_and_bound(max_nb_nodes=max_nb_nodes, verbosity=verbosity)
 
-        
+        if verbosity >= 0:
+            print(f"MILS successfully solved with B&B : \t • z = {z_opti}\n\t • x = {x_opti}")
+        return x_opti, z_opti
