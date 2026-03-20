@@ -59,21 +59,55 @@ classDiagram
         extract_baseII()
     }
     class Constraint{
-        • np.ndarray a
-        • str symbol
-        • float b_l
-        • float b_u
+        • np.ndarray **a**
+        • str **symbol**
+        • float **b_l**
+        • float **b_u**
     }
     
     class LinearProblem{
-        **int n**
-        • **int** m 
-        • <b>list[Constraint] constraints</b>
-        • np.ndarray x_l
-        • np.ndarray x_u
-        • np.ndarray c
-        • flag_max bool
+        • int **n**
+        • int **m** 
+        • list[Constraint] **constraints**
+        • np.ndarray **x_l**
+        • np.ndarray **x_u**
+        • np.ndarray **c**
+        • flag_max **bool**
+        
+        set_objective()
+        set_variable_bounds()
+        set_constraints()
+        from_mps() LinearProblem$
+        to_SLP()
+        solve()
+        getResult()
     }
+    
+    class MILP_Problem{
+        • np.ndarray **int_vars**
+        set_variables_bounds()
+        check_integrity()
+        solve_relaxation()
+        solve
+    }
+    
+    class SLP_Model{
+        • sparse.csc_matrix **A**
+        • np.ndarray **b**
+        • np.ndarray **c**
+        • int **n**
+        • int **m**
+        • float **offset**
+        • np.ndarray **col_scales**
+        scale_model()
+        modelPhaseI
+        restraint()
+
+    }
+    
+    LinearProblem <|-- MILP_Problem
+    LinearProblem *-- Constraint
+    
 ```
 
 ## Hypotheses 
