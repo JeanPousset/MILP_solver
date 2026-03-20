@@ -45,6 +45,7 @@ graph TD;
 ```
 
 - **Description**
+
 |File name | Description | Key functions provided|
 |-----|-------------|-------------------|
 | [`basis.py`](milp_module/basis.py) | Definition of the `Basis` class, its attributes and methods.  | `update_lu()`, `extract_baseII()`|
