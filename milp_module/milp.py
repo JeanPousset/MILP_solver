@@ -55,6 +55,7 @@ class MILP_Problem(LinearProblem):
         if verbosity >= 1:
             print(self)
         x_opti, z_opti = self.branch_and_bound(max_nb_nodes=max_nb_nodes, verbosity=verbosity)
+        z_opti = round(z_opti,TOL_INT)
 
         if verbosity >= 0:
             print(f"MILS successfully solved with B&B : \t • z = {z_opti}\n\t • x = {x_opti}")

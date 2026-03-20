@@ -64,7 +64,7 @@ classDiagram
         set_objective()
         set_variable_bounds()
         set_constraints()
-        from_mps() LinearProblem$
+        from_mps()$
         to_SLP()
         solve()
         getResult()
@@ -76,6 +76,7 @@ classDiagram
         check_integrity()
         solve_relaxation()
         solve()
+        branch_and_bound()
     }
     
     class SLP_Model{
@@ -89,6 +90,8 @@ classDiagram
         scale_model()
         modelPhaseI()
         restraint()
+        primal_simplex()
+        dual_simplex()
 
     }
     
@@ -106,7 +109,8 @@ We show here how to solve a basic MILP problem with our module. The following kn
 ```math
 \begin{align}
 \max \hspace{0.5cm}& 8x_1 + 11x_2 + 6x_3 + 4x_4 \\
-\text{s.t.   }\hspace{0.5cm} & 5x_1 + 7x_2 + 4x_3 + 3x_4 \leq 14
+\text{s.t.   }\hspace{0.5cm} & 5x_1 + 7x_2 + 4x_3 + 3x_4 \leq 14 \\
+& x_1,x_2,x_3,x_4 \in \{0,1\}
 \end{align}
 ```
 
@@ -159,7 +163,7 @@ subject to :
  ⦿ X_2 ∈ [0.0, 1.0]
  ⦿ X_3 ∈ [0.0, 1.0]
 
-MILS successfully solved with B&B : 	 • z = 20.999999988279633
+MILS successfully solved with B&B : 	 • z = 21.0
 	 • x = [0. 1. 1. 1.]
 ```
 
