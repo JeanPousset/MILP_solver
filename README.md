@@ -33,19 +33,6 @@ config:
   htmlLabels: false
 ---
 classDiagram
-    Animal <|-- Duck
-    note for Duck "can fly<br>can swim<br>can dive<br>can help in debugging"
-    Animal <|-- Fish
-    Animal <|-- Zebra
-    Animal : +int age
-    Animal : +String gender
-    Animal: +isMammal()
-    Animal: +mate()
-    class Duck{
-        +String beakColor
-        +swim()
-        +quack()
-    }
     class Basis{
         • int n
         • int m
@@ -68,9 +55,9 @@ classDiagram
     class LinearProblem{
         • int **n**
         • int **m** 
-        • list[Constraint] **constraints**
-        • np.ndarray **x_l**
-        • np.ndarray **x_u**
+        • list[Constraint] __constraints__
+        • np.ndarray __x_l__
+        • np.ndarray __x_u__
         • np.ndarray **c**
         • flag_max **bool**
         
