@@ -5,6 +5,10 @@
 ### Files hierarchy
 
 ```mermaid
+---
+config:
+  htmlLabels: false
+---
 graph TD; 
   subgraph __milp_module/__
     P[param.py] --> B[basis.py]
@@ -170,4 +174,4 @@ MILS successfully solved with B&B : 	 • z = 21.0
 
 ## References
 
-LP instances were found in the [Netlib dataset](https://www.netlib.org/lp/data/). The files were decompressed thanks to the `emps.c` tool, also found on this page.
+LP instances were found in the [Netlib dataset](https://www.netlib.org/lp/data/). The files were decompressed with the `emps.c` tool, also found on this page.
