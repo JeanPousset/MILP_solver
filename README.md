@@ -1,5 +1,101 @@
 # Mixed Integer-Linear Programming (MILP) Solver
 
+## Summary
+
+1. [Introduction](README#Introduction)
+2. [Usage](<README#Usage : example of a knapsack problem>)
+3. [Code Architecture](<README#Code Architecture>)
+
+## Introduction
+
+This project took place before my final-year internship. The aim was to build an Mixed Integer Linear Programming (MILP) solver from scratch so that I could fully understand the underlying principles of the methods used in commercial solvers (HiGHS, Gurobi, CPLEX, etc.).
+
+I chose to implement this module in Python to improve my knowledge of the language. Above all, I learnt how to build a module and how to use object-oriented programming, something I’d already done a lot in C++ and Julia, but never in Python.
+
+### Requirements
+
+Here are the packages I used in my MILP solver that are not included in Python by default:
+- **highspy** (to read MPS files)
+- **numpy**
+- **scipy.sparse** (to get faster LU linear resolutions)
+
+I used python 1.13. You can install the required package with the following command:
+```bash
+pip install highspy numpy scipy
+```
+
+### References
+
+LP instances were found in the [Netlib dataset](https://www.netlib.org/lp/data/). The files were decompressed with the `emps.c` tool, also found on this page.
+
+## Usage : example of a knapsack problem
+
+We show here how to solve a basic MILP problem with our module. The following knaspack example will be taken as example. 
+```math
+\begin{align}
+\max \hspace{0.5cm}& 8x_1 + 11x_2 + 6x_3 + 4x_4 \\
+\text{s.t.   }\hspace{0.5cm} & 5x_1 + 7x_2 + 4x_3 + 3x_4 \leq 14 \\
+& x_1,x_2,x_3,x_4 \in \{0,1\}
+\end{align}
+```
+
+
+### Problem definition
+
+- __0) Loading module and creating a MILP instance__
+```python
+from milp_module import *
+import numpy as np
+milp = MILP_Problem() # creation of a MILP instance
+```
+
+- __1) Defining the objective__:
+```python
+c = np.array([8., 11., 6., 4.]) # objective coefficients
+milp.set_objective("Max",c) # only "Min" or "Max" are allowed
+```
+- __2) Defining bounds and integer conditions of the variables__:
+
+\[Note\]: The variables must be lower-bounder (`-np.inf` values are not permitted in `x_l` array).
+```python
+x_l = np.array([0., 0., 0., 0.])
+x_u = np.array([1., 1., 1., 1.])
+int_vars = np.array([True, True, True, True])
+milp.set_variable_bounds(x_l,x_u,int_vars)
+```
+- __3) Defining constraints__
+
+\[Note\]: the method `set_constraints` remove the potential old constraints stored in the `MILP_Problem` instance.
+```python
+a1 = np.array([5., 7., 4., 3.])
+b1_l = -np.inf
+b1_u = 14.
+cstr1 = Constraint(a1,"<=",b1_l,b1_u)
+milp.set_constraints([cstr1])
+```
+
+### Solving the problem
+You may choose the level of logging you want with the parameter `verbosity`. The default value `-1` prints nothing. You can choose the safety for the maximum number of nodes (sub problems) computed with the parameter `max_nb_nodes`. Various tolerance parameters relative to digital approximation of zero in the Branch & Bound and simplex methods can be set in the [*milp_module/param.py*](milp_module/param.py) file.
+```python
+x_opti, z_opti = ks.solve(verbosity=0)
+```
+Once you have run all the lines above, you will get the following result:
+
+```terminal
+Max  8.0•X_0 + 11.0•X_1 + 6.0•X_2 + 4.0•X_3
+subject to :
+ ⦿ -inf <=  5.0•X_0 + 7.0•X_1 + 4.0•X_2 + 3.0•X_3 <= 14.0
+ ⦿ X_0 ∈ [0.0, 1.0]
+ ⦿ X_1 ∈ [0.0, 1.0]
+ ⦿ X_2 ∈ [0.0, 1.0]
+ ⦿ X_3 ∈ [0.0, 1.0]
+
+MILS successfully solved with B&B : z = 21.0
+	 • x = [0. 1. 1. 1.]
+```
+
+
+
 ## Code Architecture
 
 ### Files hierarchy
@@ -135,75 +231,3 @@ classDiagram
     LinearProblem *-- Constraint
     
 ```
-
-## Hypotheses 
-- Variables must be lower bounded.
-
-## Usage : example of a knapsack problem
-
-We show here how to solve a basic MILP problem with our module. The following knaspack example will be taken as example. 
-```math
-\begin{align}
-\max \hspace{0.5cm}& 8x_1 + 11x_2 + 6x_3 + 4x_4 \\
-\text{s.t.   }\hspace{0.5cm} & 5x_1 + 7x_2 + 4x_3 + 3x_4 \leq 14 \\
-& x_1,x_2,x_3,x_4 \in \{0,1\}
-\end{align}
-```
-
-
-### Problem definition
-
-- __0) Loading module and creating a MILP instance__
-```python
-from milp_module import *
-import numpy as np
-milp = MILP_Problem() # creation of a MILP instance
-```
-
-- __1) Defining the objective__:
-```python
-c = np.array([8., 11., 6., 4.]) # objective coefficients
-milp.set_objective("Max",c) # only "Min" or "Max" are allowed
-```
-- __2) Defining bounds and integer conditions of the variables__:
-```python
-x_l = np.array([0., 0., 0., 0.])
-x_u = np.array([1., 1., 1., 1.])
-int_vars = np.array([True, True, True, True])
-milp.set_variable_bounds(x_l,x_u,int_vars)
-```
-- __3) Defining constraints__
-
-\[Note\]: the method `set_constraints` remove the potential old constraints stored in the `MILP_Problem` instance.
-```python
-a1 = np.array([5., 7., 4., 3.])
-b1_l = -np.inf
-b1_u = 14.
-cstr1 = Constraint(a1,"<=",b1_l,b1_u)
-milp.set_constraints([cstr1])
-```
-
-### Solving the problem
-You may choose the level of logging you want with the parameter `verbosity`. The default value `-1` prints nothing. You can choose the safety for the maximum number of nodes (sub problems) computed with the parameter `max_nb_nodes`. Various tolerance parameters relative to digital approximation of zero in the Branch & Bound and simplex methods can be set in the [*milp_module/param.py*](milp_module/param.py) file.
-```python
-x_opti, z_opti = ks.solve(verbosity=0)
-```
-Once you have run all the lines above, you will get the following result:
-
-```terminal
-Max  8.0•X_0 + 11.0•X_1 + 6.0•X_2 + 4.0•X_3
-subject to :
- ⦿ -inf <=  5.0•X_0 + 7.0•X_1 + 4.0•X_2 + 3.0•X_3 <= 14.0
- ⦿ X_0 ∈ [0.0, 1.0]
- ⦿ X_1 ∈ [0.0, 1.0]
- ⦿ X_2 ∈ [0.0, 1.0]
- ⦿ X_3 ∈ [0.0, 1.0]
-
-MILS successfully solved with B&B : 	 • z = 21.0
-	 • x = [0. 1. 1. 1.]
-```
-
-
-## References
-
-LP instances were found in the [Netlib dataset](https://www.netlib.org/lp/data/). The files were decompressed with the `emps.c` tool, also found on this page.
