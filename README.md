@@ -1,8 +1,20 @@
-# [ON-GOING] Linear Programming Solver
+# Mixed Integer-Linear Programming (MILP) Solver
 
 ## Code Architecture
 
 ### Files hierarchy
+
+```mermaid
+graph LR;
+subgraph repository/
+  F[file.py]
+end
+A>_appendix.py] -.- appendix included in file.py -.- B[file.py]
+D[dependancy.py] -- file.py requires dependancy.py --> B
+I[[__init__.py]] -.- use of the module by the user' script -.-> U[user_script.py]
+
+```
+
 
 ```mermaid
 ---
@@ -29,8 +41,8 @@ graph TD;
     V[simplex_validation.py]
   end
   I -.-> V
-  
 ```
+
 |File name | Description | Key functions provided|
 |-----|-------------|-------------------|
 | [`basis.py`](milp_module/basis.py) | Definition of the `Basis` class, its attributes and methods.  | `update_lu()`, `extract_baseII()`|
