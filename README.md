@@ -10,7 +10,7 @@ config:
   htmlLabels: false
 ---
 graph TD; 
-  subgraph __milp_module/__
+  subgraph milp_module/
     P[param.py] --> B[basis.py]
     PS>_primal_simplex.py]
     DS>_dual_simplex.py]
@@ -19,17 +19,21 @@ graph TD;
     DS -.- S
     S --> F[lp.py]
     F --> MILP[milp.py]
-    BB[_branch_and_bound.py] -.- MILP
+    BB>_branch_and_bound.py] -.- MILP
     MILP --> I[[__init__.py]]
     
   end
   I -.-> M[main.py]
-  subgraph __unit_tests/__
+  subgraph unit_tests/
     V[simplex_validation.py]
   end
   I -.-> V
+  
 ```
+
+
 ### Class diagram
+
 
 ```mermaid
 ---
