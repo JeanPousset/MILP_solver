@@ -34,32 +34,32 @@ config:
 ---
 classDiagram
     class Basis{
-        • int n
-        • int m
-        • np.ndarray B
-        • np.ndarray N
-        • np.ndarray x
-        • np.ndarray y
-        • spla.SuperLU lu_solver
+        • int __n__
+        • int __m__
+        • np.ndarray __B__
+        • np.ndarray __N__
+        • np.ndarray __x__
+        • np.ndarray __y__
+        • spla.SuperLU __lu_solver__
         
         update_lu()
         extract_baseII()
     }
     class Constraint{
-        • np.ndarray **a**
-        • str **symbol**
-        • float **b_l**
-        • float **b_u**
+        • np.ndarray __a__
+        • str __symbol__
+        • float __b_l__
+        • float __b_u__
     }
     
     class LinearProblem{
-        • int **n**
-        • int **m** 
+        • int __n__
+        • int __m__ 
         • list[Constraint] __constraints__
         • np.ndarray __x_l__
         • np.ndarray __x_u__
-        • np.ndarray **c**
-        • flag_max **bool**
+        • np.ndarray __c__
+        • flag_max __bool__
         
         set_objective()
         set_variable_bounds()
@@ -71,23 +71,23 @@ classDiagram
     }
     
     class MILP_Problem{
-        • np.ndarray **int_vars**
+        • np.ndarray __int_vars__
         set_variables_bounds()
         check_integrity()
         solve_relaxation()
-        solve
+        solve()
     }
     
     class SLP_Model{
-        • sparse.csc_matrix **A**
-        • np.ndarray **b**
-        • np.ndarray **c**
-        • int **n**
-        • int **m**
-        • float **offset**
-        • np.ndarray **col_scales**
+        • sparse.csc_matrix __A__
+        • np.ndarray __b__
+        • np.ndarray __c__
+        • int __n__
+        • int __m__
+        • float __offset__
+        • np.ndarray __col_scales__
         scale_model()
-        modelPhaseI
+        modelPhaseI()
         restraint()
 
     }
@@ -113,26 +113,26 @@ We show here how to solve a basic MILP problem with our module. The following kn
 
 ### Problem definition
 
-- **0) Loading module and creating a MILP instance**
+- __0) Loading module and creating a MILP instance__
 ```python
 from milp_module import *
 import numpy as np
 milp = MILP_Problem() # creation of a MILP instance
 ```
 
-- **1) Defining the objective**:
+- __1) Defining the objective__:
 ```python
 c = np.array([8., 11., 6., 4.]) # objective coefficients
 milp.set_objective("Max",c) # only "Min" or "Max" are allowed
 ```
-- **2) Defining bounds and integer conditions of the variables**:
+- __2) Defining bounds and integer conditions of the variables__:
 ```python
 x_l = np.array([0., 0., 0., 0.])
 x_u = np.array([1., 1., 1., 1.])
 int_vars = np.array([True, True, True, True])
 milp.set_variable_bounds(x_l,x_u,int_vars)
 ```
-- **3) Defining constraints**
+- __3) Defining constraints__
 
 \[Note\]: the method `set_constraints` remove the potential old constraints stored in the `MILP_Problem` instance.
 ```python
