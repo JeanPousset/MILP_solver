@@ -1,5 +1,6 @@
 # ignores macOS files
 .DS_Store
+.vscode
 
 # ignore python cache files (everywhere)
 **/__pycache__/

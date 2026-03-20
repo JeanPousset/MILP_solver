@@ -25,7 +25,7 @@ class MILP_Problem(LinearProblem):
 
     def set_variable_bounds(self, x_l: np.ndarray, x_u: np.ndarray, int_flags: np.ndarray):
         super().set_variable_bounds(x_l, x_u)
-        assert np.all(x_u[int_flags] < np.inf), f"[set_variable_bounds]: integer variables must be upper-bounded."
+        # assert np.all(x_u[int_flags] < np.inf), f"[set_variable_bounds]: integer variables must be upper-bounded."
         self.int_vars = int_flags
 
     def check_integrity(self, x: np.ndarray, slp: SLP_Model):

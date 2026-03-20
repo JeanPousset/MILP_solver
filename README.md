@@ -2,6 +2,8 @@
 
 ## Code Architecture
 
+### Files hierarchy
+
 ```mermaid
 graph TD; 
   subgraph "lp_module"
@@ -23,11 +25,59 @@ graph TD;
   end
   I -.-> V
 ```
+### Class diagram
 
+```mermaid
+---
+config:
+  htmlLabels: false
+---
+classDiagram
+    Animal <|-- Duck
+    note for Duck "can fly<br>can swim<br>can dive<br>can help in debugging"
+    Animal <|-- Fish
+    Animal <|-- Zebra
+    Animal : +int age
+    Animal : +String gender
+    Animal: +isMammal()
+    Animal: +mate()
+    class Duck{
+        +String beakColor
+        +swim()
+        +quack()
+    }
+    class Basis{
+        • int n
+        • int m
+        • np.ndarray B
+        • np.ndarray N
+        • np.ndarray x
+        • np.ndarray y
+        • spla.SuperLU lu_solver
+        
+        update_lu()
+        extract_baseII()
+    }
+    class Constraint{
+        • np.ndarray a
+        • str symbol
+        • float b_l
+        • float b_u
+    }
+    
+    class LinearProblem{
+        **int n**
+        • **int** m 
+        • <b>list[Constraint] constraints</b>
+        • np.ndarray x_l
+        • np.ndarray x_u
+        • np.ndarray c
+        • flag_max bool
+    }
+```
 
 ## Hypotheses 
-- Continuous variables must be lower bounded.
-- Discrete variables must be lower and upper bounded.
+- Variables must be lower bounded.
 
 ## Usage : example of a knapsack problem
 
