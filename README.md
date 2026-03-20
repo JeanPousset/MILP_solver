@@ -6,10 +6,10 @@
 
 ```mermaid
 graph TD; 
-  subgraph "lp_module"
+  subgraph __milp_module/__
     P[param.py] --> B[basis.py]
-    PS([_primal_simplex.py])
-    DS([_dual_simplex.py])
+    PS>_primal_simplex.py]
+    DS>_dual_simplex.py]
     B --> S[slp.py]
     PS -.- S
     DS -.- S
@@ -20,7 +20,7 @@ graph TD;
     
   end
   I -.-> M[main.py]
-  subgraph "unit_tests"
+  subgraph __unit_tests/__
     V[simplex_validation.py]
   end
   I -.-> V
