@@ -4,6 +4,7 @@
 
 ### Files hierarchy
 
+- **Legend**
 ```mermaid
 graph LR;
   subgraph repository ["repository/"]
@@ -15,7 +16,7 @@ graph LR;
   I[[__init__.py]] -. "use of the module by the user' script" .-> U[user_script.py]
 ```
 
-
+- **Hierarchy**
 ```mermaid
 ---
 config:
@@ -43,6 +44,7 @@ graph TD;
   I -.-> V
 ```
 
+- **Description**
 |File name | Description | Key functions provided|
 |-----|-------------|-------------------|
 | [`basis.py`](milp_module/basis.py) | Definition of the `Basis` class, its attributes and methods.  | `update_lu()`, `extract_baseII()`|
