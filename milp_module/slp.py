@@ -87,7 +87,7 @@ class SLP_Model:
         return slp_I, baseI
     
 
-    def restraint(self, base: Basis, a: sparse.csc_matrix, b: float) -> tuple[Basis, SLP_Model]:
+    def restrain(self, base: Basis, a: sparse.csc_matrix, b: float) -> tuple[Basis, SLP_Model]:
         """Restraints the problem with the given constraint a*x >= b.
         Args:
             base (Basis): The optimal basis assiociated to the initial (self) SLP problem.

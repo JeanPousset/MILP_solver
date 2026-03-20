@@ -18,6 +18,7 @@ graph TD;
     PS -.- S
     DS -.- S
     S --> F[lp.py]
+    C[constraint.py] -->F
     F --> MILP[milp.py]
     BB>_branch_and_bound.py] -.- MILP
     MILP --> I[[__init__.py]]
@@ -30,6 +31,18 @@ graph TD;
   I -.-> V
   
 ```
+|File name | Description | Key functions provided|
+|-----|-------------|-------------------|
+| [`basis.py`](milp_module/basis.py) | Definition of the `Basis` class, its attributes and methods.  | `update_lu()`, `extract_baseII()`|
+| [`constraint.py`](milp_module/constraint.py) | Definition of the `Constraint` class, its attributes and methods. |  | 
+| [`milp.py`](milp_module/milp.py) | Definition of the `MILP_Problem` class, its attributes and methods (solver) that are not inherited from the `LinearProblem` class. | `check_integrity()`, `solve_relaxation()`, `solve()`|
+| [`lp.py`](milp_module/lp.py) | Definition of the `LinearProblem` class, its attributes and methods (including manual LP construction, MPS reader and solver).  | `from_mps()`, `to_SLP()`, `solve()` |
+| [`param.py`](milp_module/param.py) | List of all constants used to approximate the digital zero in various limit cases | |
+| [`slp.py`](milp_module/slp.py) | Definition of the `SLP_Model` class, its attributes and methods. | `scale_model()`, `modelPhaseI()`, `restrain()`
+| [`_branch_and_bound.py`](milp_module/_branch_and_bound.py) | Implementation of the branch and band (B&B) algorithm that is included in `MILP_Problem` class for its resolution. | `branch_and_bound()` | 
+| [`_dual_simplex.py`](milp_module/_dual_simplex.py) | Implementation of the dual simplex algorithm that is included in `LinearProblem` to solve restrained LP problems. | `dual_simplex()` | 
+| [`_primal_simplex.py`](milp_module/_primal_simplex.py) | Implementation of the primal simplex algorithm that is included in `LinearProblem` to solve initial LP problems. | `dual_simplex()` | 
+| [`__init__.py`](milp_module/__init__.py) | Module interface to allow users to access to some classes and their methods | `Constraint`, `LinearProblem`, `MILP_Problem`, `TOL_Z` |
 
 
 ### Class diagram
@@ -97,7 +110,7 @@ classDiagram
         • np.ndarray __col_scales__
         scale_model()
         modelPhaseI()
-        restraint()
+        restrain()
         primal_simplex()
         dual_simplex()
 

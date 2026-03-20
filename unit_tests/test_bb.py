@@ -68,7 +68,7 @@ x_opti, z_opti = ks.solve(verbosity=0)
 # a3 = sparse.csc_matrix([-2., -1., 0., 0.])
 # b3 = -4
 
-# dual_base, slp_r = slp.restraint(optiBasis, a3, b3)
+# dual_base, slp_r = slp.restrain(optiBasis, a3, b3)
 # opti_base = slp_r.dual_simplex(dual_base, verbosity=1)
 # print(opti_base)
 

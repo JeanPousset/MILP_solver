@@ -29,8 +29,8 @@ def branch(self, base: Basis, slp: SLP_Model) -> list[tuple[Basis,SLP_Model]]:
     constraint = np.zeros((slp.n),dtype='d')
     constraint[f] = 1.0
     sp_consrtaint = sparse.csc_matrix(constraint, dtype='d')
-    base_low, slp_low = slp.restraint(base, -sp_consrtaint, (-threshold) / slp.col_scales[f])
-    base_up, slp_up = slp.restraint(base, sp_consrtaint, (threshold+1) / slp.col_scales[f])
+    base_low, slp_low = slp.restrain(base, -sp_consrtaint, (-threshold) / slp.col_scales[f])
+    base_up, slp_up = slp.restrain(base, sp_consrtaint, (threshold+1) / slp.col_scales[f])
     return [base_low, slp_low], [base_up, slp_up]
 
 
