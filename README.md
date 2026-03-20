@@ -6,13 +6,13 @@
 
 ```mermaid
 graph LR;
-subgraph repository/
-  F[file.py]
-end
-A>_appendix.py] -.- appendix included in file.py -.- B[file.py]
-D[dependancy.py] -- file.py requires dependancy.py --> B
-I[[__init__.py]] -.- use of the module by the user' script -.-> U[user_script.py]
-
+  subgraph repository ["repository/"]
+    F[file.py];
+  end
+  
+  A>_appendix.py] -. "appendix included in file.py" .- B[file.py]
+  D[dependancy.py] -- "file.py requires dependancy.py" --> B
+  I[[__init__.py]] -. "use of the module by the user' script" .-> U[user_script.py]
 ```
 
 
