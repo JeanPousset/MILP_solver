@@ -19,7 +19,7 @@ Here are the packages I used in my MILP solver that are not included in Python b
 - **numpy**
 - **scipy.sparse** (to get faster LU linear resolutions)
 
-I used python 1.13. You can install the required package with the following command:
+I used Python 1.13. You can install the required package with the following command:
 ```bash
 pip install highspy numpy scipy
 ```
@@ -90,7 +90,7 @@ subject to :
  ⦿ X_2 ∈ [0.0, 1.0]
  ⦿ X_3 ∈ [0.0, 1.0]
 
-MILS successfully solved with B&B : z = 21.0
+MILP successfully solved with B&B : z = 21.0
 	 • x = [0. 1. 1. 1.]
 ```
 
@@ -158,6 +158,7 @@ graph TD;
 
 ### Class diagram
 
+\[Note \]: In Python there are no really private attributes (Some variables can be seen as ``protected" if the begin with an underscore `_`, but it is just a writting convention). This is why in the following UML diagram, I didn't specify whether an attribute or a method is private (`-`) or public (`+`).
 
 ```mermaid
 ---
