@@ -2,9 +2,9 @@
 
 ## Summary
 
-1. [Introduction](#Usage, example of a knapsack problem)
-2. [Usage](#Usage, example of a knapsack problem)
-3. [Code Architecture](#Code Architecture)
+1. [Introduction](#introduction)
+2. [Usage](#usage)
+3. [Code Architecture](<README#Code architecture>)
 
 ## Introduction
 
@@ -28,7 +28,7 @@ pip install highspy numpy scipy
 
 LP instances were found in the [Netlib dataset](https://www.netlib.org/lp/data/). The files were decompressed with the `emps.c` tool, also found on this page.
 
-## Usage, example of a knapsack problem
+## Usage
 
 We show here how to solve a basic MILP problem with our module. The following knaspack example will be taken as example. 
 ```math
@@ -95,8 +95,8 @@ MILP successfully solved with B&B : z = 21.0
 ```
 
 
-
-## Code Architecture
+<a name="code-architecture"></a>
+## Code architecture
 
 ### Files hierarchy
 
