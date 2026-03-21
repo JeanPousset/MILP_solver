@@ -3,7 +3,7 @@
 ## Summary
 
 1. [Introduction](README#Introduction)
-2. [Usage](<README#Usage: example of a knapsack problem>)
+2. [Usage](<README#Usage, example of a knapsack problem>)
 3. [Code Architecture](<README#Code Architecture>)
 
 ## Introduction
@@ -28,7 +28,7 @@ pip install highspy numpy scipy
 
 LP instances were found in the [Netlib dataset](https://www.netlib.org/lp/data/). The files were decompressed with the `emps.c` tool, also found on this page.
 
-## Usage: example of a knapsack problem
+## Usage, example of a knapsack problem
 
 We show here how to solve a basic MILP problem with our module. The following knaspack example will be taken as example. 
 ```math
