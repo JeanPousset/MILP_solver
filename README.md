@@ -2,9 +2,9 @@
 
 ## Summary
 
-1. [Introduction](README#Introduction)
-2. [Usage](<README#Usage, example of a knapsack problem>)
-3. [Code Architecture](<README#Code Architecture>)
+1. [Introduction](#Usage, example of a knapsack problem)
+2. [Usage](#Usage, example of a knapsack problem)
+3. [Code Architecture](#Code Architecture)
 
 ## Introduction
 
