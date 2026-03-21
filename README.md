@@ -4,7 +4,7 @@
 
 1. [Introduction](#introduction)
 2. [Usage](#usage)
-3. [Code Architecture](<README#Code architecture>)
+3. [Architecture](#architecture)
 
 ## Introduction
 
@@ -96,7 +96,7 @@ MILP successfully solved with B&B : z = 21.0
 
 
 <a name="code-architecture"></a>
-## Code architecture
+## Architecture
 
 ### Files hierarchy
 
